@@ -1,15 +1,15 @@
 <x-layout>
     <x-slot:title>Home</x-slot:title>
-    <div class="container mx-auto py-4">
+    <div class="container mx-auto py-4 px-4">
         <div class="relative w-full h-full">
-            <img class="w-full h-full object-cover" src="https://placehold.co/600x300" alt="Hero Section">
+            <img class="w-full h-full object-cover" src="https://images.pexels.com/photos/1050244/pexels-photo-1050244.jpeg" alt="Hero Section">
             <div class="absolute inset-0 flex flex-col items-center justify-center bg-black/50">
                 <h1 class="text-white text-7xl font-bold">Welcome to Manhitha</h1>
                 <p class="text-white text-3xl">the one stop shop for your loved once</p>
             </div>
         </div>
     </div>
-    <div class="container mx-auto py-4">
+    <div class="container mx-auto py-4 px-4">
 
 
         <div class="md:flex">

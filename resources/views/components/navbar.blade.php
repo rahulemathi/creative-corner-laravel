@@ -14,10 +14,10 @@
         </svg>
     </button>
     <div class="hidden w-full md:block md:w-auto" id="navbar-default">
-      <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-       <x-navlink href="/">Home</x-navlink>
-       <x-navlink>About</x-navlink>
-       <x-navlink>Contact</x-navlink>
+      <ul class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-transparent md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-transparent dark:bg-transparent dark:border-gray-700">
+       <x-navlink href="{{ url('/') }}" :active="request()->is('/')">Home</x-navlink>
+       <x-navlink href="{{ url('/about') }}" :active="request()->is('/about')">About</x-navlink>
+       <x-navlink href="{{ url('/contact') }}" :active="request()->is('/contact')">Contact</x-navlink>
       </ul>
     </div>
   </div>
