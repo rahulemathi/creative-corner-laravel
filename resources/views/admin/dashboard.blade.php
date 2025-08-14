@@ -1,12 +1,9 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-pink-600 dark:text-pink-400 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+<x-layout>
+    <x-slot:title>Admin Dashboard - Manhitha</x-slot:title>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <h2 class="font-semibold text-2xl text-pink-600 dark:text-pink-400 leading-tight mb-6">Dashboard</h2>
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
@@ -207,4 +204,4 @@
             </div>
         </div>
     </div>
-</x-app-layout> 
+</x-layout> 
