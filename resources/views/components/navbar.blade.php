@@ -22,8 +22,20 @@
         
         <!-- Authentication Links -->
         @auth
+          <x-navlink href="{{ route('cart.index') }}" :active="request()->routeIs('cart.index')">Cart</x-navlink>
+          <x-navlink href="{{ route('orders.index') }}" :active="request()->routeIs('orders.index')">Orders</x-navlink>
           <li class="relative">
             <div class="flex items-center space-x-4">
+              <!-- Dark Mode Toggle -->
+              <button id="theme-toggle" type="button" class="text-pink-600 dark:text-pink-400 hover:bg-pink-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500 dark:focus:ring-pink-600 rounded-lg text-sm p-2.5 transition-colors">
+                <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                </svg>
+                <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.45 4.758.35.35a.5.5 0 00.707-.707l-.35-.35a.5.5 0 00-.707.707zM15 10a1 1 0 11-2 0 1 1 0 012 0zm2.707-3.707a.5.5 0 00-.707-.707l-.35.35a.5.5 0 00.707.707l.35-.35zM2 10a1 1 0 112 0 1 1 0 01-2 0zm3.707-2.707a.5.5 0 00-.707.707l.35.35a.5.5 0 00.707-.707l-.35-.35zm1.414 5.353a.5.5 0 00.707.707l.35-.35a.5.5 0 00-.707-.707l-.35.35zM10 18a1 1 0 110-2 1 1 0 010 2zm-5.353-1.414a.5.5 0 00-.707-.707l-.35.35a.5.5 0 00.707.707l.35-.35z"></path>
+                </svg>
+              </button>
+
               @if(auth()->user()->isAdmin())
                 <a href="{{ route('admin.dashboard') }}" class="text-pink-600 hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                   Admin Dashboard

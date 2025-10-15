@@ -26,6 +26,7 @@ class Product extends Model
         'is_featured',
         'is_active',
         'sort_order',
+        'quantity',
     ];
 
     protected $casts = [
@@ -54,6 +55,11 @@ class Product extends Model
     public function scopeInStock($query)
     {
         return $query->where('stock', '>', 0);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 
     public function getFormattedPriceAttribute()
