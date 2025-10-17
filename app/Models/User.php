@@ -32,6 +32,7 @@ class User extends Authenticatable
         'email',
         'is_admin',
         'password',
+        'phone',
     ];
 
     /**
@@ -88,5 +89,15 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    public function defaultAddress()
+    {
+        return $this->hasOne(Address::class)->where('is_default', true);
     }
 }

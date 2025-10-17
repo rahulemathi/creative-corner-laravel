@@ -1,13 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\AddressController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminOrderController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 
 // Public routes
 Route::get('/', function () {
@@ -56,6 +58,11 @@ Route::middleware([
     })->name('dashboard');
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    
+
     // Cart routes
     Route::prefix('cart')->name('cart.')->group(function () {
         Route::get('/', [CartController::class, 'index'])->name('index');
@@ -66,7 +73,15 @@ Route::middleware([
         Route::post('payment',[CartController::class,'paymentStore'])->name('payment.store');
     });
 
-    
+    // Address routes
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('addresses', [AddressController::class, 'index'])->name('addresses');
+        Route::post('addresses', [AddressController::class, 'store'])->name('addresses.store');
+        Route::patch('addresses/{address}', [AddressController::class, 'update'])->name('addresses.update');
+        Route::delete('addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
+        Route::patch('addresses/{address}/default', [AddressController::class, 'setDefault'])->name('addresses.default');
+    });
+
 
     // Order routes
     Route::prefix('orders')->name('orders.')->group(function () {
