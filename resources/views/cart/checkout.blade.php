@@ -7,7 +7,7 @@
             <p class="mb-6 text-gray-700 dark:text-gray-300">Amount to pay: ₹{{ number_format($displayAmount, 2) }}</p>
 
             <button id="rzp-button" class="inline-flex items-center px-6 py-3 bg-pink-600 border border-transparent rounded-lg font-semibold text-white uppercase tracking-widest hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 transition">
-                Pay with Razorpay
+                Pay
             </button>
 
             <form id="rzp-payment-form" action="{{ route('cart.payment.store') }}" method="POST" class="hidden">

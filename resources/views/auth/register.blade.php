@@ -20,7 +20,7 @@
             </div>
 
             <div>
-                <x-label for="number" value="{{ __('number') }}" />
+                <x-label for="number" value="{{ __('phone number') }}" />
                 <x-input id="number" class="block mt-1 w-full" type="number" name="phone" :value="old('number')" required autofocus autocomplete="number" />
             </div>
 
