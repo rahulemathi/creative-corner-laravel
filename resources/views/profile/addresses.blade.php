@@ -23,10 +23,10 @@
                         <input class="form-input rounded-md" name="state" placeholder="State">
                         <input class="form-input rounded-md" name="postcode" placeholder="Postcode">
                         <input class="form-input rounded-md" name="country" placeholder="Country" value="India">
-                        <label class="inline-flex items-center space-x-2 md:col-span-2">
+                        {{-- <label class="inline-flex items-center space-x-2 md:col-span-2">
                             <input type="checkbox" name="is_default" class="form-checkbox">
                             <span>Set as default</span>
-                        </label>
+                        </label> --}}
                         <div class="md:col-span-2">
                             <x-button>Add Address</x-button>
                         </div>

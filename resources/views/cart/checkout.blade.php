@@ -5,7 +5,8 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden p-6 max-w-2xl mx-auto">
             <h1 class="text-2xl font-bold text-pink-600 dark:text-pink-400 mb-4">Complete Payment</h1>
             <p class="mb-6 text-gray-700 dark:text-gray-300">Amount to pay: ₹{{ number_format($displayAmount, 2) }}</p>
-
+            <p class="text-1xl font-bold text-pink-600 dark:text-pink-400 mb-4">Change Address</p>
+            @livewire('show-address')
             <button id="rzp-button" class="inline-flex items-center px-6 py-3 bg-pink-600 border border-transparent rounded-lg font-semibold text-white uppercase tracking-widest hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 transition">
                 Pay
             </button>
@@ -29,7 +30,8 @@
             order_id: "{{ $orderId }}",
             prefill: {
                 name: "{{ $prefill['name'] }}",
-                email: "{{ $prefill['email'] }}"
+                email: "{{ $prefill['email'] }}",
+                address:"{{ $prefill['address'] }}"
             },
             theme: { color: "#ec4899" },
             handler: function (response){

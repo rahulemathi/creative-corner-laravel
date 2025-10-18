@@ -132,6 +132,7 @@ class CartController extends Controller
             'prefill' => [
                 'name' => Auth::user()->name ?? 'Guest',
                 'email' => Auth::user()->email ?? '',
+                'address'=>session('selected_address'),
             ],
         ]);
     }
@@ -178,9 +179,10 @@ class CartController extends Controller
                 'user_id' => \Illuminate\Support\Facades\Auth::id(),
                 'order_status_id' => $status->id,
                 'total_amount' => $total,
-                'shipping_address' => 'N/A',
+                'shipping_address' => session('selected_address'),
                 'order_date' => now(),
             ]);
+            session()->forget('selected_address');
 
             foreach ($cart as $productId => $item) {
                 \App\Models\OrderItem::create([
