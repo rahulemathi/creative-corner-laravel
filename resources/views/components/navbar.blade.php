@@ -24,7 +24,7 @@
         @auth
           <x-navlink href="{{ route('cart.index') }}" :active="request()->routeIs('cart.index')">Cart</x-navlink>
           <x-navlink href="{{ route('orders.index') }}" :active="request()->routeIs('orders.index')">Orders</x-navlink>
-          <x-navlink href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">Profile</x-navlink>
+          <x-navlink href="{{ route('user.show') }}" :active="request()->routeIs('profile.show')">Profile</x-navlink>
           <li class="relative">
             <div class="flex items-center space-x-4">
               <!-- Dark Mode Toggle -->

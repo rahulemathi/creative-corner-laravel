@@ -59,7 +59,7 @@ Route::middleware([
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
     // Profile
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('user.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     
 
