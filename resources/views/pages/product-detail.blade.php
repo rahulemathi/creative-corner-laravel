@@ -127,10 +127,12 @@
                     </div>
                     @endif
                     
-                    <a href="{{ route('products.category', $product->category->slug) }}" 
-                       class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded-lg transition-colors text-center">
-                        View More {{ $product->category->name }}
-                    </a>
+                    <div class="pt-4">
+                        <a href="{{ route('products.category', $product->category->slug) }}" 
+                           class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded-lg transition-colors text-center">
+                            View More {{ $product->category->name }}
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

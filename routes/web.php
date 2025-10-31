@@ -36,6 +36,7 @@ Route::middleware([
     'admin',
 ])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/shipping', function(){ return view('admin.shipping'); })->name('shipping');
 
     // Categories management
     Route::resource('categories', CategoryController::class);

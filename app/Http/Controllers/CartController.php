@@ -3,18 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Address;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
+use App\Mail\OrderPlacedMail;
 
 class CartController extends Controller
 {
     public function index()
     {
         $cart = session()->get('cart', []);
+        // Sweet Alert on cart page if no address exists
+        if (Auth::check() && !Address::where('user_id', Auth::id())->exists()) {
+            alert()->html(
+                'No address found',
+                'Currently there is no address. <a href="'.route('profile.addresses').'" class="underline text-pink-600">Click here</a> to add a new one.',
+                'warning'
+            );
+        }
         return view('cart.index', compact('cart'));
     }
 
@@ -26,7 +37,7 @@ class CartController extends Controller
 
         $quantity = $request->quantity;
 
-        if ($product->quantity < $quantity) {
+        if ($product->stock < $quantity) {
             alert()->error('Error', 'Not enough stock available.');
             return back();
         }
@@ -62,7 +73,7 @@ class CartController extends Controller
             if ($quantity == 0) {
                 unset($cart[$product->id]);
                 alert()->success('Success', 'Product removed from cart successfully!');
-            } else if ($product->quantity < $quantity) {
+            } else if ($product->stock < $quantity) {
                 alert()->error('Error', 'Not enough stock available.');
                 return back();
             } else {
@@ -94,6 +105,16 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
         if (empty($cart)) {
             alert()->error('Error', 'Your cart is empty.');
+            return redirect()->route('cart.index');
+        }
+
+        // Require at least one address before proceeding to checkout
+        if (!Address::where('user_id', Auth::id())->exists()) {
+            alert()->html(
+                'No address found',
+                'To proceed further, please <a href="'.route('profile.addresses').'" class="underline text-pink-600">click here</a> to add an address.',
+                'warning'
+            );
             return redirect()->route('cart.index');
         }
 
@@ -172,8 +193,8 @@ class CartController extends Controller
                 $total += ($item['price'] * $item['quantity']);
             }
 
-            // Get or create a Paid status id
-            $status = \App\Models\OrderStatus::firstOrCreate(['name' => 'Paid']);
+            // Set initial Order Status as Order Placed (payment is separate)
+            $status = \App\Models\OrderStatus::firstOrCreate(['name' => 'Order Placed']);
 
             $order = \App\Models\Order::create([
                 'user_id' => \Illuminate\Support\Facades\Auth::id(),
@@ -192,12 +213,18 @@ class CartController extends Controller
                     'price' => $item['price'],
                 ]);
 
-                // Decrement available quantity
+                // Decrement available stock
                 $product = \App\Models\Product::find($productId);
                 if ($product) {
-                    $newQty = max(0, (int)$product->quantity - (int)$item['quantity']);
-                    $product->update(['quantity' => $newQty]);
+                    $newStock = max(0, (int)$product->stock - (int)$item['quantity']);
+                    $product->update(['stock' => $newStock]);
                 }
+            }
+
+            // Send order placed email to the user with order details
+            $order->load('user', 'items.product');
+            if ($order->user && $order->user->email) {
+                Mail::to($order->user->email)->send(new OrderPlacedMail($order));
             }
         });
 

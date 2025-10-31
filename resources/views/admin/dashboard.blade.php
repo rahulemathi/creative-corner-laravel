@@ -73,6 +73,9 @@
                             <div class="ml-4">
                                 <p class="text-sm font-medium text-pink-500 dark:text-pink-300">Active Products</p>
                                 <p class="text-2xl font-semibold text-pink-600 dark:text-pink-400">{{ $stats['active_products'] }}</p>
+                                <div class="mt-3">
+                                    <a href="{{ route('admin.shipping') }}" class="inline-flex items-center px-3 py-1.5 text-sm bg-pink-600 hover:bg-pink-700 text-white rounded">Go to Shipping</a>
+                                </div>
                             </div>
                         </div>
                     </div>
