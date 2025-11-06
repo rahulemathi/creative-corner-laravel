@@ -1,3 +1,8 @@
+/* swiper css */
+@import 'swiper/css';
+@import 'swiper/css/effect-cards';
+
+
 @import "flowbite/src/themes/default";
 @tailwind base;
 @tailwind components;
@@ -5,6 +10,22 @@
 @plugin "flowbite/plugin";
 @source "../../node_modules/flowbite";
 
+
+
 [x-cloak] {
     display: none;
+}
+
+.text-stroke-pink {
+    text-shadow: 
+        -1px -1px 0 #fff,
+        1px -1px 0 #fff,
+        -1px 1px 0 #fff,
+        1px 1px 0 #fff,
+        2px 2px 4px rgba(219, 39, 119, 0.3); /* pink-600 with some transparency */
+}
+
+/* Optional: make background cards partially visible */
+.swiper {
+    perspective: 1000px; /* depth effect for stacked cards */
 }

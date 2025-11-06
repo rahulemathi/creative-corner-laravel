@@ -1,4 +1,8 @@
 import './bootstrap';
+import './carousel';
+import 'swiper/css';
+import 'swiper/css/effect-cards';
+import Swiper, { EffectCards } from 'swiper';
 
 // Dark Mode Toggle Logic
 const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
@@ -44,4 +48,18 @@ themeToggleBtn.addEventListener('click', function() {
             localStorage.setItem('color-theme', 'dark');
         }
     }
+});
+
+
+// Initialize Swiper
+
+document.addEventListener('DOMContentLoaded', () => {
+    new Swiper('.mySwiper', {
+        effect: 'cards',
+        grabCursor: true,
+        loop: true,
+        slidesPerView: 1,
+        spaceBetween: 0,
+        modules: [EffectCards],
+    });
 });
