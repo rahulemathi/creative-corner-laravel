@@ -100,7 +100,7 @@
                                 View Details
                             </a>
                             @if($product->stock > 0)
-                            <a href="https://wa.me/9194494372550?text=I'm interested in {{ urlencode($product->name) }}" 
+                            <a href="https://wa.me/919449437255?text=I'm interested in {{ urlencode($product->name) }}" 
                                class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 4a8 8 0 0 0-6.895 12.06l.569.718-.697 2.359 2.32-.648.379.243A8 8 0 1 0 12 4ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10a9.96 9.96 0 0 1-5.016-1.347l-4.948 1.382 1.426-4.829-.006-.007-.033-.055A9.958 9.958 0 0 1 2 12Z"/>

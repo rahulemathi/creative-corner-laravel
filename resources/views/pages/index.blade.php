@@ -266,7 +266,7 @@
                                 class="flex-1 bg-pink-600 hover:bg-pink-700 text-white text-center py-2 px-4 rounded-lg transition-colors">
                                 View Details
                             </a>
-                            <a href="https://wa.me/9194494372550?text=I'm interested in {{ urlencode($product->name) }}"
+                            <a href="https://wa.me/919449437255?text=I'm interested in {{ urlencode($product->name) }}"
                                 class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition-colors">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path
