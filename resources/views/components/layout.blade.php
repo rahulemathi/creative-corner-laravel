@@ -6,6 +6,39 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }}</title>
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <meta name="msapplication-TileColor" content="#ec4899">
+    <meta name="msapplication-config" content="{{ asset('browserconfig.xml') }}">
+    <meta name="theme-color" content="#ec4899">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Manhitha">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Manhitha Gift Shop - Your one-stop destination for unique and thoughtful gifts for every occasion. Located in Kengeri, Bangalore.">
+    <meta name="keywords" content="gift shop, gifts, Kengeri, Bangalore, personalized gifts, custom gifts, presents, occasions">
+    <meta name="author" content="Manhitha Gift Shop">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $title }}">
+    <meta property="og:description" content="Manhitha Gift Shop - Your one-stop destination for unique and thoughtful gifts for every occasion.">
+    <meta property="og:image" content="{{ asset('android-chrome-512x512.png') }}">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="{{ $title }}">
+    <meta property="twitter:description" content="Manhitha Gift Shop - Your one-stop destination for unique and thoughtful gifts for every occasion.">
+    <meta property="twitter:image" content="{{ asset('android-chrome-512x512.png') }}">
+    
     @vite(['resources/css/app.css','resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -191,6 +224,17 @@
                 if(el){ Alpine.$data(el).load(); }
             });
         });
+
+        // Register service worker for PWA functionality (optional)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
     </script>
 </body>
 </html>
