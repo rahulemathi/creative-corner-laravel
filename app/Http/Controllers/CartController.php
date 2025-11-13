@@ -11,6 +11,7 @@ use App\Services\CookieCart;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
 use App\Mail\OrderPlacedMail;
@@ -81,7 +82,7 @@ class CartController extends Controller
         return redirect()->route('cart.index');
     }
 
-    // SHOW Razorpay Checkout page
+    // SHOW Payment Options page
     public function payment()
     {
         $cart = $this->buildCart();
@@ -97,6 +98,91 @@ class CartController extends Controller
                 'To proceed further, please <a href="'.route('profile.addresses').'" class="underline text-pink-600">click here</a> to add an address.',
                 'warning'
             );
+            return redirect()->route('cart.index');
+        }
+
+        $amount = 0;
+        foreach ($cart as $item) {
+            $amount += ($item['price'] * $item['quantity']);
+        }
+
+        return view('cart.payment-options', [
+            'cart' => $cart,
+            'total_amount' => $amount,
+        ]);
+    }
+
+    // Handle COD Order Creation
+    public function placeCodOrder(Request $request)
+    {
+        $cart = $this->buildCart();
+        if (empty($cart)) {
+            alert()->error('Error', 'Your cart is empty.');
+            return redirect()->route('cart.index');
+        }
+
+        try {
+            $total = 0;
+            foreach ($cart as $item) {
+                $total += ($item['price'] * $item['quantity']);
+            }
+
+            // Set initial Order Status as Order Placed
+            $status = \App\Models\OrderStatus::firstOrCreate(['name' => 'Order Placed']);
+
+            $order = \App\Models\Order::create([
+                'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                'order_status_id' => $status->id,
+                'total_amount' => $total,
+                'payment_method' => 'cod',
+                'payment_status' => 'pending', // COD is pending until delivery
+                'shipping_address' => session('selected_address'),
+                'order_date' => now(),
+            ]);
+            session()->forget('selected_address');
+
+            foreach ($cart as $productId => $item) {
+                \App\Models\OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $productId,
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                ]);
+
+                // Decrement available stock
+                $product = \App\Models\Product::find($productId);
+                if ($product) {
+                    $newStock = max(0, (int)$product->stock - (int)$item['quantity']);
+                    $product->update(['stock' => $newStock]);
+                }
+            }
+
+            // Clear the cart
+            $this->cookieCart->clear();
+
+            // Send order confirmation email
+            try {
+                Mail::to(Auth::user()->email)->send(new OrderPlacedMail($order));
+            } catch (\Exception $mailException) {
+                Log::warning('Failed to send order confirmation email: ' . $mailException->getMessage());
+            }
+
+            alert()->success('Success', 'Your order has been placed successfully! You will pay when the order is delivered.');
+            return redirect()->route('orders.show', $order);
+
+        } catch (\Exception $e) {
+            Log::error('COD Order creation failed: ' . $e->getMessage());
+            alert()->error('Error', 'Failed to place order. Please try again.');
+            return redirect()->route('cart.index');
+        }
+    }
+
+    // SHOW Razorpay Checkout page
+    public function razorpayCheckout()
+    {
+        $cart = $this->buildCart();
+        if (empty($cart)) {
+            alert()->error('Error', 'Your cart is empty.');
             return redirect()->route('cart.index');
         }
 
@@ -182,6 +268,15 @@ class CartController extends Controller
                 'user_id' => \Illuminate\Support\Facades\Auth::id(),
                 'order_status_id' => $status->id,
                 'total_amount' => $total,
+                'payment_method' => 'online',
+                'payment_gateway' => 'razorpay',
+                'payment_id' => $attributes['razorpay_payment_id'] ?? null,
+                'payment_status' => 'paid',
+                'payment_details' => json_encode([
+                    'razorpay_payment_id' => $attributes['razorpay_payment_id'] ?? null,
+                    'razorpay_order_id' => $attributes['razorpay_order_id'] ?? null,
+                    'razorpay_signature' => $attributes['razorpay_signature'] ?? null,
+                ]),
                 'shipping_address' => session('selected_address'),
                 'order_date' => now(),
             ]);

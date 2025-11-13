@@ -96,6 +96,8 @@ Route::middleware([
     // Protected payment routes (must be authenticated)
     Route::prefix('cart')->name('cart.')->group(function () {
         Route::get('payment',[CartController::class,'payment'])->name('payment');
+        Route::post('cod',[CartController::class,'placeCodOrder'])->name('cod.store');
+        Route::post('razorpay',[CartController::class,'razorpayCheckout'])->name('razorpay.checkout');
         Route::post('payment',[CartController::class,'paymentStore'])->name('payment.store');
     });
 

@@ -54,6 +54,11 @@ class Order extends Model
      */
     public function isPaidOnline(): bool
     {
+        // Default to false (COD) for existing orders without payment method
+        if (is_null($this->payment_method)) {
+            return false;
+        }
+        
         return in_array($this->payment_method, ['online', 'card', 'upi', 'wallet', 'netbanking']);
     }
 
@@ -72,14 +77,17 @@ class Order extends Model
      */
     public function getFormattedPaymentMethodAttribute(): string
     {
-        return match($this->payment_method) {
+        // Default to COD for existing orders without payment method
+        $paymentMethod = $this->payment_method ?? 'cod';
+        
+        return match($paymentMethod) {
             'cod' => 'Cash on Delivery',
             'online' => 'Online Payment',
             'card' => 'Credit/Debit Card',
             'upi' => 'UPI Payment',
             'wallet' => 'Digital Wallet',
             'netbanking' => 'Net Banking',
-            default => ucfirst($this->payment_method ?? 'Unknown')
+            default => ucfirst($paymentMethod)
         };
     }
 

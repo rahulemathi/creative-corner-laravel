@@ -157,6 +157,20 @@
                     <div class="info-label">Total Amount</div>
                     <div class="info-value">₹{{ number_format($order->total_amount, 2) }}</div>
                 </div>
+                <div class="info-item">
+                    <div class="info-label">Payment Method</div>
+                    <div class="info-value">{{ $order->formatted_payment_method }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Payment Status</div>
+                    <div class="info-value">
+                        @if($order->isPaidOnline())
+                            <span style="color: #10b981;">{{ ucfirst($order->payment_status ?? 'Paid') }}</span>
+                        @else
+                            <span style="color: #f59e0b;">Cash on Delivery</span>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -185,7 +199,10 @@
         @if($order->isPaidOnline())
         <div class="refund-info">
             <h3>💰 Refund Information</h3>
-            <p><strong>Payment Method:</strong> {{ $order->formatted_payment_method }}</p>
+            <p><strong>Original Payment Method:</strong> {{ $order->formatted_payment_method }}</p>
+            @if($order->payment_gateway)
+                <p><strong>Payment Gateway:</strong> {{ ucfirst($order->payment_gateway) }}</p>
+            @endif
             <p><strong>Refund Amount:</strong> ₹{{ number_format($order->refund_amount ?? $order->total_amount, 2) }}</p>
             
             @if($order->refund_status)
@@ -196,26 +213,34 @@
                 </p>
                 
                 @if($order->refund_status === 'initiated' || $order->refund_status === 'processing')
-                    <p><strong>Processing Time:</strong> 3-5 business days</p>
-                    <p>Your refund has been {{ $order->refund_status }} and will be processed to your original payment method. You'll receive updates on the refund progress.</p>
+                    <p><strong>Expected Processing Time:</strong> 3-5 business days</p>
+                    <p>Your refund has been {{ $order->refund_status === 'initiated' ? 'initiated' : 'sent for processing' }} and will be credited back to your original payment method. You'll receive updates via email as the refund progresses.</p>
+                    @if($order->refund_id)
+                        <p><strong>Refund Reference ID:</strong> {{ $order->refund_id }}</p>
+                    @endif
                 @elseif($order->refund_status === 'completed')
-                    <p>Your refund has been successfully processed to your original payment method.</p>
+                    <p style="color: #10b981;"><strong>✅ Great News!</strong> Your refund has been successfully processed and credited to your original payment method.</p>
                     @if($order->refund_processed_at)
                         <p><strong>Processed On:</strong> {{ $order->refund_processed_at->format('M d, Y \a\t H:i') }}</p>
                     @endif
+                    @if($order->refund_id)
+                        <p><strong>Refund Reference ID:</strong> {{ $order->refund_id }}</p>
+                    @endif
                 @elseif($order->refund_status === 'failed')
-                    <p style="color: #dc2626;">There was an issue processing your refund automatically. Our team will process it manually within 24 hours.</p>
+                    <p style="color: #dc2626;"><strong>⚠️ Refund Processing Issue:</strong> There was an issue processing your refund automatically. Don't worry - our team has been notified and will process your refund manually within 24 hours.</p>
+                    <p>You'll receive a separate email confirmation once your refund has been processed manually.</p>
                 @endif
             @else
-                <p><strong>Processing Time:</strong> 3-5 business days</p>
-                <p>Your refund will be processed to your original payment method. You'll receive a separate confirmation once the refund has been initiated.</p>
+                <p><strong>Expected Processing Time:</strong> 3-5 business days</p>
+                <p>Your refund will be processed and credited back to your original payment method. You'll receive a separate email confirmation once the refund has been initiated.</p>
             @endif
         </div>
         @else
         <div class="refund-info" style="background-color: #fef3c7; border-color: #f59e0b;">
-            <h3>📋 Payment Information</h3>
-            <p><strong>Payment Method:</strong> Cash on Delivery</p>
-            <p>Since this was a Cash on Delivery order, no refund processing is required.</p>
+            <h3>� Payment Information</h3>
+            <p><strong>Payment Method:</strong> {{ $order->formatted_payment_method }}</p>
+            <p><strong>Order Total:</strong> ₹{{ number_format($order->total_amount, 2) }}</p>
+            <p>Since this was a Cash on Delivery order, no online refund processing is required. The payment was not collected, so no amount will be charged or refunded.</p>
         </div>
         @endif
 
