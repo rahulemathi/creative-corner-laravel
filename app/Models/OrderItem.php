@@ -25,4 +25,33 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function customizations()
+    {
+        return $this->hasMany(OrderCustomization::class);
+    }
+
+    /**
+     * Check if this order item has customizations
+     */
+    public function hasCustomizations()
+    {
+        return $this->customizations()->exists();
+    }
+
+    /**
+     * Get image customization
+     */
+    public function getImageCustomization()
+    {
+        return $this->customizations()->where('type', 'image')->first();
+    }
+
+    /**
+     * Get text customization
+     */
+    public function getTextCustomization()
+    {
+        return $this->customizations()->where('type', 'text')->first();
+    }
 }

@@ -82,10 +82,15 @@
                         <span class="font-medium">{{ $product->sku }}</span>
                     </div>
                     @endif
-                    @if($product->dimensions)
+                    @if($product->hasFixedDimensions())
                     <div class="flex justify-between">
                         <span class="text-gray-600 dark:text-gray-400">Dimensions:</span>
-                        <span class="font-medium">{{ $product->dimensions }}</span>
+                        <span class="font-medium">{{ $product->formatted_dimensions }}</span>
+                    </div>
+                    @elseif($product->supportsDimensionCustomization())
+                    <div class="flex justify-between">
+                        <span class="text-gray-600 dark:text-gray-400">Dimensions:</span>
+                        <span class="font-medium text-pink-600">Customizable</span>
                     </div>
                     @endif
                     @if($product->weight)
@@ -108,6 +113,13 @@
                     </div>
                 </div>
 
+                <!-- Customization Section -->
+                @if($product->is_customizable)
+                    <div class="mb-6">
+                        @livewire('product-customization', ['product' => $product])
+                    </div>
+                @endif
+
                 <!-- Action Buttons -->
                 <div class="space-y-3">
                     @if($product->stock > 0)
@@ -119,6 +131,9 @@
                                     <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4Zm-8 2a2 2 0 11-4 0 2 2 0 014 0Z"/>
                                 </svg>
                                 Add to Cart
+                                @if($product->is_customizable && $product->customization_price > 0)
+                                    <span class="text-xs ml-2">(+₹{{ number_format($product->customization_price, 2) }} for customization)</span>
+                                @endif
                             </button>
                         </form>
                     @else

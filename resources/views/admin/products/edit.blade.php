@@ -1,18 +1,19 @@
 <x-layout>
-	<x-slot:title>Create Product - Manhitha</x-slot:title>
+	<x-slot:title>Edit Product - Manhitha</x-slot:title>
 
 	<div class="py-12">
 		<div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 			<div class="flex justify-between items-center mb-6">
-				<h2 class="font-semibold text-2xl text-pink-600 dark:text-pink-400 leading-tight">Create Product</h2>
+				<h2 class="font-semibold text-2xl text-pink-600 dark:text-pink-400 leading-tight">Edit Product</h2>
 				<a href="{{ route('admin.products.index') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
 					Back to Products
 				</a>
 			</div>
 			<div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
 				<div class="p-6">
-					<form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+					<form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
 						@csrf
+						@method('PUT')
 						
 						<div>
 							<label for="category_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category *</label>
@@ -20,7 +21,7 @@
 									class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 								<option value="">Select a category</option>
 								@foreach($categories as $category)
-									<option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+									<option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
 										{{ $category->name }}
 									</option>
 								@endforeach
@@ -32,7 +33,7 @@
 
 						<div>
 							<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product Name *</label>
-							<input type="text" name="name" id="name" value="{{ old('name') }}" required 
+							<input type="text" name="name" id="name" value="{{ old('name', $product->name) }}" required 
 								   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 							@error('name')
 								<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -42,7 +43,7 @@
 						<div>
 							<label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description *</label>
 							<textarea name="description" id="description" rows="4" required 
-								  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('description') }}</textarea>
+								  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('description', $product->description) }}</textarea>
 							@error('description')
 								<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
 							@enderror
@@ -51,7 +52,7 @@
 						<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 							<div>
 								<label for="price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Price *</label>
-								<input type="number" name="price" id="price" value="{{ old('price') }}" step="0.01" min="0" required 
+								<input type="number" name="price" id="price" value="{{ old('price', $product->price) }}" step="0.01" min="0" required 
 									   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 								@error('price')
 									<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -60,7 +61,7 @@
 
 							<div>
 								<label for="sale_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sale Price</label>
-								<input type="number" name="sale_price" id="sale_price" value="{{ old('sale_price') }}" step="0.01" min="0" 
+								<input type="number" name="sale_price" id="sale_price" value="{{ old('sale_price', $product->sale_price) }}" step="0.01" min="0" 
 									   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 								@error('sale_price')
 									<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -69,7 +70,7 @@
 
 							<div>
 								<label for="stock" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Stock *</label>
-								<input type="number" name="stock" id="stock" value="{{ old('stock', 0) }}" min="0" required 
+								<input type="number" name="stock" id="stock" value="{{ old('stock', $product->stock) }}" min="0" required 
 									   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 								@error('stock')
 									<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -80,7 +81,7 @@
 						<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 							<div>
 								<label for="sku" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SKU</label>
-								<input type="text" name="sku" id="sku" value="{{ old('sku') }}" 
+								<input type="text" name="sku" id="sku" value="{{ old('sku', $product->sku) }}" 
 									   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 								@error('sku')
 									<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -89,7 +90,7 @@
 
 							<div>
 								<label for="weight" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Weight</label>
-								<input type="text" name="weight" id="weight" value="{{ old('weight') }}" 
+								<input type="text" name="weight" id="weight" value="{{ old('weight', $product->weight) }}" 
 									   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 								@error('weight')
 									<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -100,9 +101,9 @@
 								<label for="dimension_unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Dimension Unit</label>
 								<select name="dimension_unit" id="dimension_unit" 
 									    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-									<option value="cm" {{ old('dimension_unit', 'cm') == 'cm' ? 'selected' : '' }}>Centimeters (cm)</option>
-									<option value="mm" {{ old('dimension_unit') == 'mm' ? 'selected' : '' }}>Millimeters (mm)</option>
-									<option value="in" {{ old('dimension_unit') == 'in' ? 'selected' : '' }}>Inches (in)</option>
+									<option value="cm" {{ old('dimension_unit', $product->dimension_unit ?? 'cm') == 'cm' ? 'selected' : '' }}>Centimeters (cm)</option>
+									<option value="mm" {{ old('dimension_unit', $product->dimension_unit) == 'mm' ? 'selected' : '' }}>Millimeters (mm)</option>
+									<option value="in" {{ old('dimension_unit', $product->dimension_unit) == 'in' ? 'selected' : '' }}>Inches (in)</option>
 								</select>
 								@error('dimension_unit')
 									<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -120,7 +121,7 @@
 							<div class="grid grid-cols-1 md:grid-cols-4 gap-6">
 								<div>
 									<label for="length" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Length</label>
-									<input type="number" name="length" id="length" value="{{ old('length') }}" step="0.01" min="0" 
+									<input type="number" name="length" id="length" value="{{ old('length', $product->length) }}" step="0.01" min="0" 
 										   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 									@error('length')
 										<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -129,7 +130,7 @@
 
 								<div>
 									<label for="width" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Width</label>
-									<input type="number" name="width" id="width" value="{{ old('width') }}" step="0.01" min="0" 
+									<input type="number" name="width" id="width" value="{{ old('width', $product->width) }}" step="0.01" min="0" 
 										   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 									@error('width')
 										<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -138,7 +139,7 @@
 
 								<div>
 									<label for="height" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Height</label>
-									<input type="number" name="height" id="height" value="{{ old('height') }}" step="0.01" min="0" 
+									<input type="number" name="height" id="height" value="{{ old('height', $product->height) }}" step="0.01" min="0" 
 										   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 									@error('height')
 										<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -147,7 +148,7 @@
 
 								<div>
 									<label for="dimensions" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Alternative Description</label>
-									<input type="text" name="dimensions" id="dimensions" value="{{ old('dimensions') }}" 
+									<input type="text" name="dimensions" id="dimensions" value="{{ old('dimensions', $product->dimensions) }}" 
 										   placeholder="e.g., Standard mug size"
 										   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 									@error('dimensions')
@@ -160,12 +161,26 @@
 
 						<div>
 							<label for="material" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Material</label>
-							<input type="text" name="material" id="material" value="{{ old('material') }}" 
+							<input type="text" name="material" id="material" value="{{ old('material', $product->material) }}" 
 								   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 							@error('material')
 								<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
 							@enderror
 						</div>
+
+						<!-- Current Images Display -->
+						@if($product->images && count($product->images) > 0)
+							<div>
+								<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Current Images</label>
+								<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+									@foreach($product->images as $image)
+										<div class="relative">
+											<img src="{{ asset('storage/' . $image) }}" alt="Product Image" class="w-full h-32 object-cover rounded-lg">
+										</div>
+									@endforeach
+								</div>
+							</div>
+						@endif
 
 						<div>
 							<label for="images" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product Images</label>
@@ -174,13 +189,13 @@
 							@error('images')
 								<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
 							@enderror
-							<p class="text-sm text-gray-500 mt-1">You can select multiple images. Hold Ctrl/Cmd to select multiple files.</p>
+							<p class="text-sm text-gray-500 mt-1">Upload new images to replace existing ones. You can select multiple images.</p>
 						</div>
 
 						<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 							<div>
 								<label for="sort_order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sort Order</label>
-								<input type="number" name="sort_order" id="sort_order" value="{{ old('sort_order', 0) }}" min="0" 
+								<input type="number" name="sort_order" id="sort_order" value="{{ old('sort_order', $product->sort_order) }}" min="0" 
 									   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 								@error('sort_order')
 									<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -188,13 +203,13 @@
 							</div>
 
 							<div class="flex items-center">
-								<input type="checkbox" name="is_featured" id="is_featured" value="1" {{ old('is_featured') ? 'checked' : '' }} 
+								<input type="checkbox" name="is_featured" id="is_featured" value="1" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }} 
 									   class="w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500 dark:focus:ring-pink-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
 								<label for="is_featured" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Featured Product</label>
 							</div>
 
 							<div class="flex items-center">
-								<input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }} 
+								<input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }} 
 									   class="w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500 dark:focus:ring-pink-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
 								<label for="is_active" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Active</label>
 							</div>
@@ -206,31 +221,31 @@
 							
 							<div class="space-y-6">
 								<div class="flex items-center">
-									<input type="checkbox" name="is_customizable" id="is_customizable" value="1" {{ old('is_customizable') ? 'checked' : '' }} 
+									<input type="checkbox" name="is_customizable" id="is_customizable" value="1" {{ old('is_customizable', $product->is_customizable) ? 'checked' : '' }} 
 										   class="w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500 dark:focus:ring-pink-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
 										   onchange="toggleCustomizationFields()">
 									<label for="is_customizable" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Allow Customization</label>
 								</div>
 
-								<div id="customization_fields" class="space-y-4" style="display: {{ old('is_customizable') ? 'block' : 'none' }};">
+								<div id="customization_fields" class="space-y-4" style="display: {{ old('is_customizable', $product->is_customizable) ? 'block' : 'none' }};">
 									<div>
 										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customization Options</label>
 										<div class="space-y-2">
 											<div class="flex items-center">
 												<input type="checkbox" name="customization_options[]" id="image_upload" value="image_upload" 
-													   {{ in_array('image_upload', old('customization_options', [])) ? 'checked' : '' }}
+													   {{ in_array('image_upload', old('customization_options', $product->customization_options ?? [])) ? 'checked' : '' }}
 													   class="w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500 dark:bg-gray-700 dark:border-gray-600">
 												<label for="image_upload" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Image Upload</label>
 											</div>
 											<div class="flex items-center">
 												<input type="checkbox" name="customization_options[]" id="text_input" value="text_input" 
-													   {{ in_array('text_input', old('customization_options', [])) ? 'checked' : '' }}
+													   {{ in_array('text_input', old('customization_options', $product->customization_options ?? [])) ? 'checked' : '' }}
 													   class="w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500 dark:bg-gray-700 dark:border-gray-600">
 												<label for="text_input" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Text Input</label>
 											</div>
 											<div class="flex items-center">
 												<input type="checkbox" name="customization_options[]" id="dimensions" value="dimensions" 
-													   {{ in_array('dimensions', old('customization_options', [])) ? 'checked' : '' }}
+													   {{ in_array('dimensions', old('customization_options', $product->customization_options ?? [])) ? 'checked' : '' }}
 													   class="w-4 h-4 text-pink-600 bg-gray-100 border-gray-300 rounded focus:ring-pink-500 dark:bg-gray-700 dark:border-gray-600">
 												<label for="dimensions" class="ml-2 text-sm text-gray-700 dark:text-gray-300">Custom Dimensions</label>
 											</div>
@@ -239,7 +254,7 @@
 
 									<div>
 										<label for="customization_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customization Fee</label>
-										<input type="number" name="customization_price" id="customization_price" value="{{ old('customization_price', 0) }}" step="0.01" min="0" 
+										<input type="number" name="customization_price" id="customization_price" value="{{ old('customization_price', $product->customization_price) }}" step="0.01" min="0" 
 											   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
 										@error('customization_price')
 											<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -250,7 +265,7 @@
 										<label for="customization_instructions" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Customization Instructions</label>
 										<textarea name="customization_instructions" id="customization_instructions" rows="3" 
 												  placeholder="Guidelines for customers when customizing this product..."
-												  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('customization_instructions') }}</textarea>
+												  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('customization_instructions', $product->customization_instructions) }}</textarea>
 										@error('customization_instructions')
 											<p class="text-red-500 text-sm mt-1">{{ $message }}</p>
 										@enderror
@@ -266,7 +281,7 @@
 							</a>
 							<button type="submit" 
 									class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-lg transition-colors">
-								Create Product
+								Update Product
 							</button>
 						</div>
 					</form>
@@ -309,12 +324,15 @@ function toggleDimensionFields() {
 	}
 }
 
-// Add event listeners for customization options
+// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
+	toggleCustomizationFields();
+	
+	// Add event listeners for customization options
 	const dimensionsCheckbox = document.getElementById('dimensions');
 	if (dimensionsCheckbox) {
 		dimensionsCheckbox.addEventListener('change', toggleDimensionFields);
 	}
 });
 </script>
-</x-layout> 
+</x-layout>

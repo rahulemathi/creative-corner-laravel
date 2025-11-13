@@ -33,16 +33,35 @@ class ProductController extends Controller
             'sku' => 'nullable|string|unique:products,sku',
             'stock' => 'required|integer|min:0',
             'dimensions' => 'nullable|string|max:255',
+            'length' => 'nullable|numeric|min:0',
+            'width' => 'nullable|numeric|min:0',
+            'height' => 'nullable|numeric|min:0',
+            'dimension_unit' => 'nullable|string|in:cm,mm,in',
             'weight' => 'nullable|string|max:255',
             'material' => 'nullable|string|max:255',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_featured' => 'boolean',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0',
+            'is_customizable' => 'boolean',
+            'customization_options' => 'nullable|array',
+            'customization_options.*' => 'in:image_upload,text_input,dimensions',
+            'customization_price' => 'nullable|numeric|min:0',
+            'customization_instructions' => 'nullable|string',
         ]);
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
+        
+        // Handle customization data
+        if ($request->has('is_customizable') && $request->is_customizable) {
+            $data['customization_options'] = $request->customization_options ?? [];
+        } else {
+            $data['is_customizable'] = false;
+            $data['customization_options'] = [];
+            $data['customization_price'] = null;
+            $data['customization_instructions'] = null;
+        }
         
         if ($request->hasFile('images')) {
             $imagePaths = [];
@@ -75,16 +94,35 @@ class ProductController extends Controller
             'sku' => 'nullable|string|unique:products,sku,' . $product->id,
             'stock' => 'required|integer|min:0',
             'dimensions' => 'nullable|string|max:255',
+            'length' => 'nullable|numeric|min:0',
+            'width' => 'nullable|numeric|min:0',
+            'height' => 'nullable|numeric|min:0',
+            'dimension_unit' => 'nullable|string|in:cm,mm,in',
             'weight' => 'nullable|string|max:255',
             'material' => 'nullable|string|max:255',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_featured' => 'boolean',
             'is_active' => 'boolean',
             'sort_order' => 'nullable|integer|min:0',
+            'is_customizable' => 'boolean',
+            'customization_options' => 'nullable|array',
+            'customization_options.*' => 'in:image_upload,text_input,dimensions',
+            'customization_price' => 'nullable|numeric|min:0',
+            'customization_instructions' => 'nullable|string',
         ]);
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
+        
+        // Handle customization data
+        if ($request->has('is_customizable') && $request->is_customizable) {
+            $data['customization_options'] = $request->customization_options ?? [];
+        } else {
+            $data['is_customizable'] = false;
+            $data['customization_options'] = [];
+            $data['customization_price'] = null;
+            $data['customization_instructions'] = null;
+        }
         
         if ($request->hasFile('images')) {
             $imagePaths = [];
