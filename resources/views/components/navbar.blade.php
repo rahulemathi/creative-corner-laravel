@@ -2,7 +2,7 @@
 <nav class="bg-white border-gray-200 dark:bg-red-100 shadow-lg">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
     <a href="{{ url('/') }}" class="flex items-center space-x-3 rtl:space-x-reverse">
-        <img src="https://placehold.co/400" class="h-8" alt="Manhitha Logo" />
+        <img src="{{ asset('images/logo/logo.png') }}" class="h-8" alt="Manhitha Logo" />
         <span class="self-center text-2xl font-semibold whitespace-nowrap text-pink-600 dark:text-pink-500">Manhitha</span>
     </a>
     

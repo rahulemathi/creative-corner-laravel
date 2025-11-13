@@ -194,25 +194,29 @@
             <p class="text-lg text-pink-500 dark:text-pink-300">Discover our wide range of gifts and accessories</p>
         </div>
 
-   <div class="swiper mySwiper max-w-5xl mx-auto py-12 h-[500px] perspective-1000">
-    <div class="swiper-wrapper">
-        @foreach (\App\Models\Category::active()->ordered()->take(6)->get() as $category)
-            <div class="swiper-slide flex justify-center">
-                <div class="w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden hover:shadow-2xl transition-shadow p-6">
-                    <h3 class="text-xl font-semibold text-pink-600 dark:text-pink-400 mb-3">{{ $category->name }}</h3>
-                    <p class="text-pink-500 dark:text-pink-300 mb-4">{{ Str::limit($category->description, 100) }}</p>
-                    <a href="{{ route('products.category', $category->slug) }}"
-                       class="inline-flex items-center px-4 py-2 bg-pink-600 text-white font-medium rounded-lg hover:bg-pink-700 transition-colors">
-                        View Products
-                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                </div>
+        <div class="swiper mySwiper max-w-5xl mx-auto py-12 h-[500px] perspective-1000">
+            <div class="swiper-wrapper">
+                @foreach (\App\Models\Category::active()->ordered()->take(6)->get() as $category)
+                    <div class="swiper-slide flex justify-center" style="background: none">
+                        <div
+                            class="w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden hover:shadow-2xl transition-shadow p-6">
+                            <h3 class="text-xl font-semibold text-pink-600 dark:text-pink-400 mb-3">
+                                {{ $category->name }}</h3>
+                            <p class="text-pink-500 dark:text-pink-300 mb-4">
+                                {{ Str::limit($category->description, 100) }}</p>
+                            <a href="{{ route('products.category', $category->slug) }}"
+                                class="inline-flex items-center px-4 py-2 bg-pink-600 text-white font-medium rounded-lg hover:bg-pink-700 transition-colors">
+                                View Products
+                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-        @endforeach
-    </div>
-</div>
+        </div>
 
 
 

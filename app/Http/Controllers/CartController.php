@@ -7,6 +7,8 @@ use App\Models\Address;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\CookieCart;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Razorpay\Api\Api;
@@ -15,14 +17,23 @@ use App\Mail\OrderPlacedMail;
 
 class CartController extends Controller
 {
+    /**
+     * Service instance for cookie-based cart persistence.
+     */
+    protected CookieCart $cookieCart;
+
+    public function __construct()
+    {
+        $this->cookieCart = new CookieCart();
+    }
+
     public function index()
     {
-        $cart = session()->get('cart', []);
-        // Sweet Alert on cart page if no address exists
+        $cart = $this->buildCart();
         if (Auth::check() && !Address::where('user_id', Auth::id())->exists()) {
             alert()->html(
                 'No address found',
-                'Currently there is no address. <a href="'.route('profile.addresses').'" class="underline text-pink-600">Click here</a> to add a new one.',
+                'Currently there is no address. <a href="' . route('profile.addresses') . '" class="underline text-pink-600">Click here</a> to add a new one.',
                 'warning'
             );
         }
@@ -34,28 +45,12 @@ class CartController extends Controller
         $request->validate([
             'quantity' => 'required|integer|min:1',
         ]);
-
-        $quantity = $request->quantity;
-
+        $quantity = (int) $request->quantity;
         if ($product->stock < $quantity) {
             alert()->error('Error', 'Not enough stock available.');
             return back();
         }
-
-        $cart = session()->get('cart', []);
-
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['quantity'] += $quantity;
-        } else {
-            $cart[$product->id] = [
-                "name" => $product->name,
-                "quantity" => $quantity,
-                "price" => $product->sale_price ?? $product->price,
-                "image" => $product->images[0] ?? '' // Assuming first image is thumbnail
-            ];
-        }
-
-        session()->put('cart', $cart);
+        $this->cookieCart->add($product->id, $quantity);
         alert()->success('Success', 'Product added to cart successfully!');
         return redirect()->route('cart.index');
     }
@@ -65,44 +60,31 @@ class CartController extends Controller
         $request->validate([
             'quantity' => 'required|integer|min:0',
         ]);
-
-        $quantity = $request->quantity;
-
-        $cart = session()->get('cart');
-        if (isset($cart[$product->id])) {
-            if ($quantity == 0) {
-                unset($cart[$product->id]);
-                alert()->success('Success', 'Product removed from cart successfully!');
-            } else if ($product->stock < $quantity) {
-                alert()->error('Error', 'Not enough stock available.');
-                return back();
-            } else {
-                $cart[$product->id]['quantity'] = $quantity;
-                alert()->success('Success', 'Cart updated successfully!');
-            }
-            session()->put('cart', $cart);
-            return redirect()->route('cart.index');
+        $quantity = (int) $request->quantity;
+        if ($quantity === 0) {
+            $this->cookieCart->remove($product->id);
+            alert()->success('Success', 'Product removed from cart successfully!');
+        } elseif ($product->stock < $quantity) {
+            alert()->error('Error', 'Not enough stock available.');
+            return back();
+        } else {
+            $this->cookieCart->update($product->id, $quantity);
+            alert()->success('Success', 'Cart updated successfully!');
         }
-
-        alert()->error('Error', 'Product not found in cart.');
-        return back();
+        return redirect()->route('cart.index');
     }
 
     public function remove(Product $product)
     {
-        $cart = session()->get('cart');
-        if (isset($cart[$product->id])) {
-            unset($cart[$product->id]);
-            session()->put('cart', $cart);
-            alert()->success('Success', 'Product removed from cart successfully!');
-        }
+        $this->cookieCart->remove($product->id);
+        alert()->success('Success', 'Product removed from cart successfully!');
         return redirect()->route('cart.index');
     }
 
     // SHOW Razorpay Checkout page
     public function payment()
     {
-        $cart = session()->get('cart', []);
+        $cart = $this->buildCart();
         if (empty($cart)) {
             alert()->error('Error', 'Your cart is empty.');
             return redirect()->route('cart.index');
@@ -141,8 +123,8 @@ class CartController extends Controller
         ]);
 
         // Store order id in session for later verification
-        session()->put('razorpay_order_id', $order['id']);
-        session()->put('razorpay_order_amount', $amountInPaise);
+    session()->put('razorpay_order_id', $order['id']);
+    session()->put('razorpay_order_amount', $amountInPaise); // keep ephemeral in session
 
         return view('cart.checkout', [
             'key' => $apiKey,
@@ -181,7 +163,7 @@ class CartController extends Controller
 
         // At this point, payment is successful & verified
         // Create Order and OrderItems, decrement product quantity
-        $cart = session()->get('cart', []);
+        $cart = $this->buildCart();
         if (empty($cart)) {
             alert()->warning('Notice', 'Cart was empty after payment.');
             return redirect()->route('orders.index');
@@ -229,11 +211,67 @@ class CartController extends Controller
         });
 
         // Clear session
-        session()->forget('cart');
+    $this->cookieCart->clear();
         session()->forget('razorpay_order_id');
         session()->forget('razorpay_order_amount');
 
         alert()->success('Payment Successful', 'Your order has been placed.');
         return redirect()->route('orders.index');
     }
+
+    /**
+     * Build enriched cart (product details) from cookie raw quantities.
+     */
+    private function buildCart(): array
+    {
+        $rawCart = $this->cookieCart->all();
+        if (empty($rawCart)) {
+            return [];
+        }
+        $products = Product::whereIn('id', array_keys($rawCart))->get()->keyBy('id');
+        $cart = [];
+        foreach ($rawCart as $pid => $qty) {
+            if (!isset($products[$pid])) {
+                continue;
+            }
+            $p = $products[$pid];
+            $cart[$pid] = [
+                'name' => $p->name,
+                'quantity' => $qty,
+                'price' => $p->sale_price ?? $p->price,
+                'image' => $p->images[0] ?? ''
+            ];
+        }
+        return $cart;
+    }
+
+    /**
+     * JSON mini cart for sidebar enrichment.
+     */
+    public function mini(): \Illuminate\Http\JsonResponse
+    {
+        $cart = $this->buildCart();
+        $items = [];
+        $total = 0;
+        foreach ($cart as $id => $row) {
+            $line = [
+                'id' => $id,
+                'name' => $row['name'],
+                'quantity' => $row['quantity'],
+                'price' => (float) $row['price'],
+                'subtotal' => (float) ($row['price'] * $row['quantity']),
+                'image' => $row['image'] ? asset('storage/'.$row['image']) : null,
+                'url' => route('products.show', \App\Models\Product::find($id)?->slug ?? ''),
+            ];
+            $total += $line['subtotal'];
+            $items[] = $line;
+        }
+        return response()->json([
+            'items' => $items,
+            'total' => $total,
+            'count' => array_sum(array_column($items, 'quantity')),
+        ]);
+    }
+
+    // Cart is cookie-only; no session cart is used anymore.
 }

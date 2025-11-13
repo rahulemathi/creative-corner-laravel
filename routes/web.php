@@ -6,6 +6,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\AdminOrderController;
@@ -23,6 +24,25 @@ Route::get('/about', function(){
 Route::get('/contact', function(){
     return view('pages.contact');
 });
+
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+
+// Policy and Info Pages
+Route::get('/privacy-policy', function(){
+    return view('pages.privacy');
+})->name('privacy');
+
+Route::get('/terms-of-service', function(){
+    return view('pages.terms');
+})->name('terms');
+
+Route::get('/refund-policy', function(){
+    return view('pages.refund');
+})->name('refund');
+
+Route::get('/shipping-info', function(){
+    return view('pages.shipping');
+})->name('shipping');
 
 
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
@@ -48,7 +68,16 @@ Route::middleware([
     Route::resource('orders', AdminOrderController::class)->except(['create', 'store', 'destroy']);
 });
 
-// Jetstream routes (user dashboard)
+// Public cart routes (guest can build cart via cookie)
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::post('add/{product}', [CartController::class, 'add'])->name('add');
+    Route::patch('update/{product}', [CartController::class, 'update'])->name('update');
+    Route::delete('remove/{product}', [CartController::class, 'remove'])->name('remove');
+    Route::get('mini', [CartController::class, 'mini'])->name('mini');
+});
+
+// Jetstream routes (user dashboard & protected actions)
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -64,12 +93,8 @@ Route::middleware([
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     
 
-    // Cart routes
+    // Protected payment routes (must be authenticated)
     Route::prefix('cart')->name('cart.')->group(function () {
-        Route::get('/', [CartController::class, 'index'])->name('index');
-        Route::post('add/{product}', [CartController::class, 'add'])->name('add');
-        Route::patch('update/{product}', [CartController::class, 'update'])->name('update');
-        Route::delete('remove/{product}', [CartController::class, 'remove'])->name('remove');
         Route::get('payment',[CartController::class,'payment'])->name('payment');
         Route::post('payment',[CartController::class,'paymentStore'])->name('payment.store');
     });

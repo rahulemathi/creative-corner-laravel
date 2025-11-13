@@ -28,7 +28,7 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-pink-600 dark:text-pink-400">Phone</h3>
-                                <p class="text-pink-500 dark:text-pink-300">+91 98765 43210</p>
+                                <p class="text-pink-500 dark:text-pink-300">+91 9449437255</p>
                                 <p class="text-sm text-pink-400 dark:text-pink-200">Monday - Sunday, 9:00 AM - 8:00 PM</p>
                             </div>
                         </div>
@@ -62,10 +62,8 @@
                             <div>
                                 <h3 class="text-lg font-semibold text-pink-600 dark:text-pink-400">Address</h3>
                                 <p class="text-pink-500 dark:text-pink-300">
-                                    123 Gift Street<br>
-                                    Shopping District<br>
-                                    City - 123456<br>
-                                    State, Country
+                                  365 Kengeri Bazaar Street, <br>
+                                  Kuvempu Rd, opp. to Anjaneya Statue, Kengeri, Karnataka 560060
                                 </p>
                             </div>
                         </div>
@@ -102,7 +100,7 @@
 
                 <!-- Quick Contact Buttons -->
                 <div class="space-y-4">
-                    <a href="https://wa.me/919876543210" 
+                    <a href="https://wa.me/919449437255" target="_blank" 
                        class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-colors flex items-center justify-center">
                         <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 4a8 8 0 0 0-6.895 12.06l.569.718-.697 2.359 2.32-.648.379.243A8 8 0 1 0 12 4ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10a9.96 9.96 0 0 1-5.016-1.347l-4.948 1.382 1.426-4.829-.006-.007-.033-.055A9.958 9.958 0 0 1 2 12Z"/>
@@ -111,7 +109,7 @@
                         Chat on WhatsApp
                     </a>
                     
-                    <a href="tel:+919876543210" 
+                    <a href="tel:+919449437255" 
                        class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-4 px-6 rounded-lg transition-colors flex items-center justify-center">
                         <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
@@ -125,50 +123,93 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
                 <h2 class="text-2xl font-bold text-pink-600 dark:text-pink-400 mb-6">Send us a Message</h2>
                 
-                <form class="space-y-6">
+                <!-- Success Message -->
+                @if(session('success'))
+                    <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            {{ session('success') }}
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Error Message -->
+                @if(session('error'))
+                    <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                            </svg>
+                            {{ session('error') }}
+                        </div>
+                    </div>
+                @endif
+                
+                <form class="space-y-6" method="POST" action="{{ route('contact.send') }}">
+                    @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label for="first_name" class="block text-sm font-medium text-pink-600 dark:text-pink-400 mb-2">First Name *</label>
-                            <input type="text" id="first_name" name="first_name" required 
-                                   class="w-full px-3 py-2 border border-pink-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white">
+                            <input type="text" id="first_name" name="first_name" required value="{{ old('first_name') }}"
+                                   class="w-full px-3 py-2 border @error('first_name') border-red-500 @else border-pink-300 @enderror rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white">
+                            @error('first_name')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label for="last_name" class="block text-sm font-medium text-pink-600 dark:text-pink-400 mb-2">Last Name *</label>
-                            <input type="text" id="last_name" name="last_name" required 
-                                   class="w-full px-3 py-2 border border-pink-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white">
+                            <input type="text" id="last_name" name="last_name" required value="{{ old('last_name') }}"
+                                   class="w-full px-3 py-2 border @error('last_name') border-red-500 @else border-pink-300 @enderror rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white">
+                            @error('last_name')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
                     <div>
                         <label for="email" class="block text-sm font-medium text-pink-600 dark:text-pink-400 mb-2">Email Address *</label>
-                        <input type="email" id="email" name="email" required 
-                               class="w-full px-3 py-2 border border-pink-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white">
+                        <input type="email" id="email" name="email" required value="{{ old('email') }}"
+                               class="w-full px-3 py-2 border @error('email') border-red-500 @else border-pink-300 @enderror rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white">
+                        @error('email')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
                         <label for="phone" class="block text-sm font-medium text-pink-600 dark:text-pink-400 mb-2">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" 
-                               class="w-full px-3 py-2 border border-pink-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white">
+                        <input type="tel" id="phone" name="phone" value="{{ old('phone') }}"
+                               class="w-full px-3 py-2 border @error('phone') border-red-500 @else border-pink-300 @enderror rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white">
+                        @error('phone')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
                         <label for="subject" class="block text-sm font-medium text-pink-600 dark:text-pink-400 mb-2">Subject *</label>
                         <select id="subject" name="subject" required 
-                                class="w-full px-3 py-2 border border-pink-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white">
+                                class="w-full px-3 py-2 border @error('subject') border-red-500 @else border-pink-300 @enderror rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white">
                             <option value="">Select a subject</option>
-                            <option value="general">General Inquiry</option>
-                            <option value="order">Order Information</option>
-                            <option value="product">Product Questions</option>
-                            <option value="support">Customer Support</option>
-                            <option value="feedback">Feedback</option>
+                            <option value="general" {{ old('subject') == 'general' ? 'selected' : '' }}>General Inquiry</option>
+                            <option value="order" {{ old('subject') == 'order' ? 'selected' : '' }}>Order Information</option>
+                            <option value="product" {{ old('subject') == 'product' ? 'selected' : '' }}>Product Questions</option>
+                            <option value="support" {{ old('subject') == 'support' ? 'selected' : '' }}>Customer Support</option>
+                            <option value="feedback" {{ old('subject') == 'feedback' ? 'selected' : '' }}>Feedback</option>
                         </select>
+                        @error('subject')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
                         <label for="message" class="block text-sm font-medium text-pink-600 dark:text-pink-400 mb-2">Message *</label>
                         <textarea id="message" name="message" rows="5" required 
-                                  class="w-full px-3 py-2 border border-pink-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white"
-                                  placeholder="Tell us how we can help you..."></textarea>
+                                  class="w-full px-3 py-2 border @error('message') border-red-500 @else border-pink-300 @enderror rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent dark:bg-gray-700 dark:border-pink-600 dark:text-white"
+                                  placeholder="Tell us how we can help you...">{{ old('message') }}</textarea>
+                        @error('message')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <button type="submit" 
@@ -184,14 +225,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
                 <h2 class="text-2xl font-bold text-pink-600 dark:text-pink-400 text-center mb-6">Find Our Store</h2>
                 <div class="bg-gray-200 dark:bg-gray-700 rounded-lg h-96 flex items-center justify-center">
-                    <div class="text-center">
-                        <svg class="w-16 h-16 text-pink-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                        <p class="text-pink-500 dark:text-pink-300">Interactive Map Coming Soon</p>
-                        <p class="text-sm text-pink-400 dark:text-pink-200 mt-2">123 Gift Street, Shopping District, City - 123456</p>
-                    </div>
+                   <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3888.955183684235!2d77.47969757615454!3d12.910602016210536!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae3fa2f3c6bf17%3A0xfd5c6cc147facfc9!2sCreative%20corner%20xerox%20and%20Stationery!5e0!3m2!1sen!2sin!4v1763029474572!5m2!1sen!2sin" width="1000" height="350" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div>
             </div>
         </div>
