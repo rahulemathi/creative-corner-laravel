@@ -16,6 +16,8 @@ class ShippingPage extends Component
 
     public string $search = '';
     public ?int $statusFilter = null;
+    
+    protected $paginationTheme = 'bootstrap';
 
     #[On('order-status-updated')]
     public function refreshList(): void
@@ -33,17 +35,27 @@ class ShippingPage extends Component
         $this->resetPage();
     }
 
-    public function updateStatus(int $orderId, int $statusId): void
+    public function clearFilters(): void
     {
-        $order = Order::with('user', 'status')->findOrFail($orderId);
-        $order->update(['order_status_id' => $statusId]);
-        $order->load('status');
+        $this->reset(['search', 'statusFilter']);
+        $this->resetPage();
+    }
 
-        // Notify user via email with the updated status
-        Mail::to($order->user->email)->send(new OrderStatusUpdated($order));
+    public function updateStatus($orderId, $statusId): void
+    {
+        try {
+            $order = Order::with('user', 'status')->findOrFail($orderId);
+            $order->update(['order_status_id' => $statusId]);
+            $order->load('status');
 
-        $this->dispatch('order-status-updated');
-        session()->flash('success', 'Order status updated and user notified.');
+            // Notify user via email with the updated status
+            Mail::to($order->user->email)->send(new OrderStatusUpdated($order));
+
+            $this->dispatch('order-status-updated');
+            session()->flash('success', 'Order status updated and user notified.');
+        } catch (\Exception $e) {
+            session()->flash('error', 'Failed to update order status: ' . $e->getMessage());
+        }
     }
 
     public function render()
@@ -55,11 +67,15 @@ class ShippingPage extends Component
         }
 
         $query = Order::with('user', 'status')
-            ->when($this->search !== '', function ($q) {
-                $q->whereHas('user', function ($uq) {
-                    $uq->where('name', 'like', "%{$this->search}%")
-                       ->orWhere('email', 'like', "%{$this->search}%");
-                })->orWhere('id', $this->search);
+            ->when(trim($this->search) !== '', function ($q) {
+                $search = trim($this->search);
+                $q->where(function($subQ) use ($search) {
+                    $subQ->whereHas('user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%{$search}%")
+                           ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhere('id', 'like', "%{$search}%");
+                });
             })
             ->when($this->statusFilter, function ($q) {
                 $q->where('order_status_id', $this->statusFilter);

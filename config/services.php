@@ -35,4 +35,32 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Payment Gateway Services
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for various payment gateways used in the application
+    | for processing payments and refunds.
+    |
+    */
+
+    'razorpay' => [
+        'key_id' => env('RAZORPAY_KEY_ID'),
+        'key_secret' => env('RAZORPAY_KEY_SECRET'),
+        'webhook_secret' => env('RAZORPAY_WEBHOOK_SECRET'),
+    ],
+
+    'payu' => [
+        'key' => env('PAYU_KEY'),
+        'salt' => env('PAYU_SALT'),
+        'environment' => env('PAYU_ENVIRONMENT', 'test'), // test or live
+    ],
+
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
 ];

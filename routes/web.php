@@ -113,6 +113,8 @@ Route::middleware([
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [OrderController::class, 'index'])->name('index');
         Route::get('{order}', [OrderController::class, 'show'])->name('show');
+        Route::patch('{order}/cancel', [OrderController::class, 'cancel'])->name('cancel');
+        Route::get('{order}/refund-status', [OrderController::class, 'checkRefundStatus'])->name('refund.status');
         // Route::post('/', [OrderController::class, 'store'])->name('store'); // For creating orders from cart
     });
 });
